@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주보 안내 - The Bridge Community Church</title>
+  <link rel="stylesheet" href="/style/style.css">
+  <link rel="stylesheet" href="/style/page.css">
+  <link rel="stylesheet" href="/style/sermon.css">
+</head>
+<body>
+  <div id="header"></div>
+  <main>
+    <section class="bulletin">
+      <h2>주보 안내</h2>
+      <div class="bulletin-content">
+        <div class="sermon-section-title-wrap" style="display: flex; align-items: center; justify-content: space-between;">
+          <div class="sermon-section-title">2025년 주보</div>
+          <button id="toggle-bulletin-list" style="background:none;border:none;cursor:pointer;font-size:2rem;line-height:1;outline:none;padding:0 0.5rem;" aria-label="더보기"><span id="arrow-icon">▼</span></button>
+        </div>
+        <hr class="section-divider">
+        <div id="bulletin-list" class="bulletin-grid">
+          <p>주보 데이터를 불러오는 중...</p>
+        </div>
+        <p style="margin-top: 2rem; color: #666; font-size: 0.9rem;">
+          💡 주간/월간 교회 주보를 PDF로 확인하실 수 있습니다. <br>
+          💡 주보가 보이지 않으시면 브라우저에서 PDF 뷰어를 활성화해주세요.
+        </p>
+      </div>
+    </section>
+  </main>
+  <div id="footer"></div>
+  <script src="/main.js"></script>
+  <script>
+    fetch('/header.html')
+      .then(res => res.text())
+      .then(data => { document.getElementById('header').innerHTML = data; });
+    fetch('/footer.html')
+      .then(res => res.text())
+      .then(data => { document.getElementById('footer').innerHTML = data; });
+
+    // 주보 데이터 로드 (GitHub Actions로 자동 업데이트된 JSON 사용)
+    async function loadBulletinData() {
+      try {
+        const res = await fetch('/bulletins.json');
+        if (!res.ok) {
+          throw new Error(`주보 데이터 로드 실패: ${res.status}`);
+        }
+        return await res.json();
+      } catch (error) {
+        console.error('주보 데이터 로드 실패:', error.message);
+        return [];
+      }
+    }
+
+    loadBulletinData().then(bulletins => {
+      const grid = document.getElementById('bulletin-list');
+      
+      if (bulletins.length === 0) {
+        grid.innerHTML = '<p>등록된 주보가 없습니다.</p>';
+        return;
+      }
+
+      // 날짜순으로 정렬 (최신순, 내림차순)
+      bulletins.sort((a, b) => {
+        // date 필드 기준으로 정렬 (더 정확함)
+        try {
+          // date 필드가 "2025.09.21" 형식이므로 Date 객체로 변환하여 비교
+          const dateA = new Date(a.date.replace(/\./g, '-'));
+          const dateB = new Date(b.date.replace(/\./g, '-'));
+          
+          // 날짜가 유효한지 확인
+          if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+            // 날짜가 유효하지 않으면 createdTime으로 폴백
+            return new Date(b.createdTime) - new Date(a.createdTime);
+          }
+          
+          // 날짜가 같으면 createdTime으로 세부 정렬
+          if (dateA.getTime() === dateB.getTime() && a.createdTime && b.createdTime) {
+            return new Date(b.createdTime) - new Date(a.createdTime);
+          }
+          
+          return dateB - dateA; // 내림차순 (최신 → 과거)
+        } catch (error) {
+          console.warn('날짜 정렬 중 오류:', error);
+          // 오류 발생 시 createdTime으로 폴백
+          return new Date(b.createdTime) - new Date(a.createdTime);
+        }
+      });
+
+      console.log('정렬된 주보 순서:');
+      bulletins.slice(0, 5).forEach((bulletin, index) => {
+        console.log(`${index + 1}. ${bulletin.date} - ${bulletin.name}`);
+      });
+
+      grid.innerHTML = bulletins.map(bulletin => `
+        <div class="bulletin-card">
+          <div class="bulletin-date">${bulletin.date}</div>
+          <h3 class="bulletin-title">${bulletin.name}</h3>
+          <div class="bulletin-actions">
+            <a href="${bulletin.viewLink}" target="_blank" class="bulletin-btn view-btn">
+              📖 보기
+            </a>
+            <a href="${bulletin.downloadLink}" target="_blank" class="bulletin-btn download-btn">
+              📥 다운로드
+            </a>
+          </div>
+        </div>
+      `).join('');
+
+      // 더보기/슬라이드 다운 기능 (설교 페이지와 동일한 로직)
+      const cards = grid.querySelectorAll('.bulletin-card');
+      const btn = document.getElementById('toggle-bulletin-list');
+      let expanded = false;
+
+      function getCardHeight(n) {
+        if (cards.length === 0) return 0;
+        const card = cards[0];
+        const style = window.getComputedStyle(grid);
+        const gap = parseFloat(style.gap) || 0;
+        // 한 줄에 몇 개가 들어가는지 동적으로 계산
+        const cardsPerRow = Math.floor(grid.offsetWidth / card.offsetWidth) || 1;
+        const rowCount = Math.ceil(n / cardsPerRow);
+        const cardHeight = card.offsetHeight;
+        if (cardHeight === 0) {
+          return (250 + gap) * rowCount; 
+        }
+        return rowCount * cardHeight + (rowCount - 1) * gap + 20;
+      }
+
+      function updateView() {
+        if (expanded) {
+          grid.style.maxHeight = getCardHeight(cards.length) + 'px';
+        } else {
+          grid.style.maxHeight = getCardHeight(4) + 'px'; // 처음에는 6개만 보이게
+        }
+        btn.setAttribute('aria-label', expanded ? '접기' : '더보기');
+        btn.classList.toggle('open', expanded);
+      }
+
+      // 이벤트 리스너가 중복으로 등록되지 않도록 한 번만 실행
+      if (!btn.dataset.listenerAttached) {
+          btn.addEventListener('click', function() {
+            expanded = !expanded;
+            updateView();
+          });
+          window.addEventListener('resize', () => updateView());
+          btn.dataset.listenerAttached = 'true';
+      }
+      
+      // 최초 6개만 보이게 설정
+      updateView();
+    }).catch(error => {
+      console.error('주보 데이터 로드 실패:', error);
+      document.getElementById('bulletin-list').innerHTML = 
+        '<p>주보 데이터를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.</p>';
+    });
+  </script>
+
+  <style>
+    .bulletin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1.5rem;
+      overflow: hidden;
+      transition: max-height 0.4s ease-in-out;
+      max-height: 600px; /* 초기 높이 설정 */
+    }
+
+    .bulletin-card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .bulletin-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .bulletin-date {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .bulletin-title {
+      color: #2c3e50;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .bulletin-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .bulletin-btn {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .view-btn {
+      background: #3498db;
+      color: white;
+    }
+
+    .view-btn:hover {
+      background: #2980b9;
+    }
+
+    .download-btn {
+      background: #95a5a6;
+      color: white;
+    }
+
+    .download-btn:hover {
+      background: #7f8c8d;
+    }
+
+    /* 설교 페이지와 동일한 더보기 버튼 스타일 */
+    #toggle-bulletin-list {
+      color: #666;
+      transition: transform 0.3s ease;
+    }
+
+    #toggle-bulletin-list:hover {
+      color: #333;
+    }
+
+    #toggle-bulletin-list.open #arrow-icon {
+      transform: rotate(180deg);
+    }
+
+    #arrow-icon {
+      transition: transform 0.3s ease;
+    }
+
+    @media (max-width: 1200px) {
+      .bulletin-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .bulletin-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+      }
+      
+      .bulletin-actions {
+        flex-direction: column;
+      }
+      
+      .bulletin-btn {
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .bulletin-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</body>
+</html> 

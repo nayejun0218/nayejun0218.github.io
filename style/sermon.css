@@ -309,6 +309,7 @@
   font-weight: 500;
 }
 
+
 .sermon-title {
   font-size: 1.05rem;
   font-weight: 800;
@@ -373,7 +374,7 @@
   width: 100%;
 }
 
-.slider-prev, .slider-next {
+.slider-prev, .slider-next, .slider-prev-shorts, .slider-next-shorts {
   width: 44px;
   height: 44px;
   border-radius: 10px;
@@ -392,14 +393,14 @@
   align-self: center;
 }
 
-.slider-prev:hover, .slider-next:hover {
+.slider-prev:hover, .slider-next:hover, .slider-prev-shorts:hover, .slider-next-shorts:hover {
   background: #00022688;
   color: #fff;
   box-shadow: 0 4px 16px rgba(44,62,80,0.18);
   transform: scale(1.08);
 }
 
-.slider-prev:disabled, .slider-next:disabled {
+.slider-prev:disabled, .slider-next:disabled, .slider-prev-shorts:disabled, .slider-next-shorts:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   background: #f0f2f4;
@@ -795,7 +796,7 @@
     font-size: 1.4rem;
   }
   
-  .slider-prev, .slider-next {
+  .slider-prev, .slider-next, .slider-prev-shorts, .slider-next-shorts {
     width: 36px;
     height: 36px;
     font-size: 2rem;
@@ -911,7 +912,7 @@
     font-size: 1.3rem;
   }
   
-  .slider-prev, .slider-next {
+  .slider-prev, .slider-next, .slider-prev-shorts, .slider-next-shorts {
     width: 32px;
     height: 32px;
     font-size: 1.8rem;
@@ -1028,7 +1029,7 @@
     font-size: 1.2rem;
   }
   
-  .slider-prev, .slider-next {
+  .slider-prev, .slider-next, .slider-prev-shorts, .slider-next-shorts {
     width: 30px;
     height: 30px;
     font-size: 1.6rem;
@@ -1191,7 +1192,7 @@
     font-size: 1.1rem;
   }
   
-  .slider-prev, .slider-next {
+  .slider-prev, .slider-next, .slider-prev-shorts, .slider-next-shorts {
     width: 28px;
     height: 28px;
     font-size: 1.4rem;
