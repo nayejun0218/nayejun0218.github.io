@@ -110,12 +110,48 @@
     radial-gradient(circle at 30% 40%, rgba(255,255,255,0.15) 2px, transparent 2px),
     radial-gradient(circle at 70% 80%, rgba(255,255,255,0.08) 1px, transparent 1px);
   background-size: 60px 60px, 40px 40px;
-  animation: patternMove2 25s linear infinite;
+  animation: patternMove2 20s linear infinite;
 }
 
 @keyframes patternMove2 {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  100% { transform: translate(60px, 60px) rotate(360deg); }
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(60px, 60px); }
+}
+
+/* 세 번째 배너 배경 */
+.hero-gradient-3 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, 
+    #464991 0%, 
+    #565ab1 20%, 
+    #7175b5 40%, 
+    #94A2D4 60%, 
+    #6469ab 80%, 
+    #222567 100%);
+  opacity: 0.92;
+}
+
+.hero-pattern-3 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 2px, transparent 2px),
+    radial-gradient(circle at 80% 70%, rgba(255,255,255,0.06) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 45px 45px, 35px 35px, 25px 25px;
+  animation: patternMove3 20s linear infinite;
+}
+
+@keyframes patternMove3 {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(45px, 45px); }
 }
 
 /* 텍스트 컨테이너 */
@@ -134,7 +170,7 @@
 
 .hero-title-main {
   display: block;
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 800;
   margin-bottom: -10px;
   color: #ffffff;
@@ -144,7 +180,7 @@
 
 .hero-title-sub {
   display: block;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 300;
   /* font-style: italic; */
   color: rgba(255,255,255,0.9);
@@ -165,7 +201,7 @@
 }
 
 .motto-text {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 600;
   color: #ffffff;
   text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
@@ -382,6 +418,29 @@
   100% { filter: drop-shadow(0 0 25px rgba(255,255,255,0.7)); }
 }
 
+.bible-icon {
+  width: 200px;
+  height: 200px;
+}
+
+.bible-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 12px rgba(255,255,255,0.3));
+  animation: bibleGlow 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes bibleGlow {
+  0% { 
+    filter: drop-shadow(0 0 12px rgba(255,255,255,0.3));
+    transform: scale(1);
+  }
+  100% { 
+    filter: drop-shadow(0 0 18px rgba(255,255,255,0.6));
+    transform: scale(1.02);
+  }
+}
+
 /* 네비게이션 점들 */
 .hero-nav-dots {
   position: absolute;
@@ -424,15 +483,15 @@
   }
 
   .hero-title-main {
-    font-size: 3rem;
+    font-size: 2.5rem;
   }
 
   .hero-title-sub {
-    font-size: 1.6rem;
+    font-size: 1.3rem;
   }
 
   .motto-text {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
 
   .hero-info {
@@ -475,15 +534,15 @@
   }
 
   .hero-title-main {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 
   .hero-title-sub {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
   }
 
   .motto-text {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
   .hero-info {
@@ -528,15 +587,15 @@
   }
 
   .hero-title-main {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
   }
 
   .hero-title-sub {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
   }
 
   .motto-text {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
 
   .hero-info {
@@ -572,16 +631,16 @@
   }
 
   .hero-title-main {
-    font-size: 1.7rem;
+    font-size: 1.5rem;
     padding-bottom: 10px;
   }
 
   .hero-title-sub {
-    font-size: 1.0rem;
+    font-size: 0.9rem;
   }
 
   .motto-text {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     line-height: 1.2;
     padding: 0 5px;
     margin-bottom: 15px;
@@ -698,12 +757,12 @@
   }
 
   .hero-title-main {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     padding-bottom: 10px;
   }
 
   .hero-title-sub {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
 
   .motto-text {
